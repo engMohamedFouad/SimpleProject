@@ -1,0 +1,15 @@
+﻿@model Product
+
+<div class="card">
+    <h5 class="card-header">Are you sure you want to delete this product?</h5>
+    <div class="card-body">
+        <h5 class="card-title">@Model.Name</h5>
+        <p class="card-text">@Model.Price</p>
+    </div>
+    <div class="card-footer">
+        <form asp-action="Delete">
+            <input  type="submit" value="Delete" class="btn btn-danger"/>
+            <a asp-action="Index" class=" btn btn-primary">Back To List</a>
+        </form>
+    </div>
+</div>

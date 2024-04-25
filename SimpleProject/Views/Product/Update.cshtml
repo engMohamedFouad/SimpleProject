@@ -1,0 +1,35 @@
+﻿@model Product
+
+<div>
+    <form asp-action="Update" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div>
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Price"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Current Image</label>
+            <img  src="@Model.Path" height="50" width="50"/>
+            <input asp-for="Path" type="hidden"/>
+        </div>
+        <div>
+            <label asp-for="File"></label>
+            <input type="file" asp-for="File" class="form-control" value="0" />
+            <span asp-validation-for="File" class="text-danger"></span>
+        </div>
+        <div>
+            <input type="submit" value="Update" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScript");
+    }
+}
