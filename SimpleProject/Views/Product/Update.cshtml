@@ -13,7 +13,7 @@
             <input asp-for="Price" class="form-control" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
-        <div>
+       @*  <div>
             <label>Current Image</label>
             <img  src="@Model.Path" height="50" width="50"/>
             <input asp-for="Path" type="hidden"/>
@@ -22,7 +22,7 @@
             <label asp-for="File"></label>
             <input type="file" asp-for="File" class="form-control" value="0" />
             <span asp-validation-for="File" class="text-danger"></span>
-        </div>
+        </div> *@
         <div>
             <input type="submit" value="Update" class="btn btn-primary" />
         </div>

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleProject.Data;
 using SimpleProject.Services.Implementations;
 using SimpleProject.Services.Interfaces;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

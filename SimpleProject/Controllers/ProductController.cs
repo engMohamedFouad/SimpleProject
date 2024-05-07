@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SimpleProject.Models;
 using SimpleProject.Services.Interfaces;
+using SimpleProject.ViewModels;
 
 namespace SimpleProject.Controllers
 {
@@ -10,13 +12,16 @@ namespace SimpleProject.Controllers
         private readonly IProductService _productService;
         private readonly IFileService _fileService;
         private readonly ICategoryService _categoryService;
+        private readonly IMapper _mapper;
         public ProductController(IProductService productService,
                                  IFileService fileService,
-                                 ICategoryService categoryService)
+                                 ICategoryService categoryService,
+                                 IMapper mapper)
         {
             _productService = productService;
             _fileService = fileService;
             _categoryService = categoryService;
+            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -38,23 +43,15 @@ namespace SimpleProject.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Product model)
+        public async Task<IActionResult> Create(AddProductViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var path = "";
-                    if (model.File?.Length > 0)
-                    {
-                        path = await _fileService.Upload(model.File, "/images/");
-                        if (path == "Problem")
-                        {
-                            return BadRequest();
-                        }
-                    }
-                    model.Path = path;
-                    var result = await _productService.AddProduct(model);
+
+                    var product = _mapper.Map<Product>(model);
+                    var result = await _productService.AddProduct(product, model.Files);
                     if (result != "Success")
                     {
                         ModelState.AddModelError(string.Empty, result);
@@ -91,19 +88,19 @@ namespace SimpleProject.Controllers
                     var product = await _productService.GetProductById(id);
                     if (product == null) return NotFound();
 
-                    var path = model.Path;
-                    if (model.File?.Length > 0)
-                    {
-                        //Delete Old Physical File
-                        _fileService.DeletePhysicalFile(path);
-                        //Upload new Image
-                        path = await _fileService.Upload(model.File, "/images/");
-                        if (path == "Problem")
-                        {
-                            return BadRequest();
-                        }
-                    }
-                    product.Path = path;
+                    //var path = model.Path;
+                    //if (model.File?.Length > 0)
+                    //{
+                    //    //Delete Old Physical File
+                    //    _fileService.DeletePhysicalFile(path);
+                    //    //Upload new Image
+                    //    path = await _fileService.Upload(model.File, "/images/");
+                    //    if (path == "Problem")
+                    //    {
+                    //        return BadRequest();
+                    //    }
+                    //}
+                    //product.Path = path;
                     product.Name = model.Name;
                     product.Price = model.Price;
                     var result = await _productService.UpdateProduct(product);

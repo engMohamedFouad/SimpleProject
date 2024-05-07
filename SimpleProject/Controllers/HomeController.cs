@@ -1,16 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SimpleProject.Models;
+using Microsoft.EntityFrameworkCore;
+using SimpleProject.Data;
 
 namespace SimpleProject.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext _applicationDbContext;
+        public HomeController(ApplicationDbContext applicationDbContext)
         {
-            ViewBag.Name = "mohamed";
-            ViewData["Tilte"] = "Home";
-            Product product = new Product() { Id = 1, Name = "Mohamed" };
-            return View(product);
+            _applicationDbContext = applicationDbContext;
+        }
+        public async Task<IActionResult> Index()
+        {
+            var categories = await _applicationDbContext.Category.Include(x => x.Products.Take(5)).ToListAsync();
+            return View(categories);
         }
 
     }

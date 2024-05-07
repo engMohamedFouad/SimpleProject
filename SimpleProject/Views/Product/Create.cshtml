@@ -1,4 +1,4 @@
-﻿@model Product
+﻿@model AddProductViewModel
 
 <div>
     <form asp-action="Create" method="post" enctype="multipart/form-data">
@@ -14,9 +14,9 @@
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         <div>
-            <label asp-for="File"></label>
-            <input type="file" asp-for="File" class="form-control" value="0" />
-            <span asp-validation-for="File" class="text-danger"></span>
+            <label asp-for="Files"></label>
+            <input type="file" asp-for="Files" class="form-control" value="0" multiple/>
+            <span asp-validation-for="Files" class="text-danger"></span>
         </div>
         <div>
             <label asp-for="CategoryId"></label>

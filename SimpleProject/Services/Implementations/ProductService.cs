@@ -19,12 +19,41 @@ namespace SimpleProject.Services.Implementations
         }
         #endregion
         #region Implement functions
-        public async Task<string> AddProduct(Product product)
+        public async Task<string> AddProduct(Product product, List<IFormFile>? files)
         {
             try
             {
+
                 await _context.Product.AddAsync(product);
                 await _context.SaveChangesAsync();
+
+
+                if (files != null && files.Count() > 0)
+                {
+                    var pathList = new List<string>();
+                    foreach (var file in files)
+                    {
+                        var path = await _fileService.Upload(file, "/images/");
+                        if (!path.StartsWith("/images/"))
+                        {
+                            return path;
+                        }
+                        pathList.Add(path);
+                    }
+
+                    var productImages = new List<ProductImages>();
+                    foreach (var file in pathList)
+                    {
+                        var productImage = new ProductImages();
+                        productImage.ProductId = product.Id;
+                        productImage.Path = file;
+                        productImages.Add(productImage);
+                    }
+                    _context.ProductsImages.AddRange(productImages);
+
+                    await _context.SaveChangesAsync();
+
+                }
                 return "Success";
             }
             catch (Exception ex)
@@ -37,10 +66,10 @@ namespace SimpleProject.Services.Implementations
         {
             try
             {
-                string path = product.Path;
+                //string path = product.Path;
                 _context.Product.Remove(product);
                 await _context.SaveChangesAsync();
-                _fileService.DeletePhysicalFile(path);
+                //_fileService.DeletePhysicalFile(path);
                 return "Success";
             }
             catch (Exception ex)

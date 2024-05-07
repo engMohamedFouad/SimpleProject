@@ -42,9 +42,9 @@ namespace SimpleProject.Services.Implementations
                     return $"{location}/{fileName}";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return "Problem";
+                return ex.Message + "--" + ex.InnerException;
             }
         }
     }
