@@ -10,5 +10,6 @@ namespace SimpleProject.Services.Interfaces
         public Task<string> UpdateProduct(Product product);
         public Task<string> DeleteProduct(Product product);
         public Task<bool> IsProductNameExistAsync(string productName);
+        public string GetTitle();
     }
 }

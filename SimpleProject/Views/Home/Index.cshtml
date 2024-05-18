@@ -1,9 +1,10 @@
 ﻿@model IEnumerable<Category>
+@inject IProductService _productService;
 @{
     ViewBag.Title = "Product List";
 }
 
-
+<h1 class="text-center">@_productService.GetTitle()</h1>
 @foreach(var item in Model)
 {
     <h1>@item.Name</h1>

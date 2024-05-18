@@ -21,16 +21,16 @@ namespace SimpleProject.Services.Implementations
         #region Implement functions
         public async Task<string> AddProduct(Product product, List<IFormFile>? files)
         {
+            var pathList = new List<string>();
+            var trans = await _context.Database.BeginTransactionAsync();
             try
             {
-
                 await _context.Product.AddAsync(product);
                 await _context.SaveChangesAsync();
 
 
                 if (files != null && files.Count() > 0)
                 {
-                    var pathList = new List<string>();
                     foreach (var file in files)
                     {
                         var path = await _fileService.Upload(file, "/images/");
@@ -52,12 +52,18 @@ namespace SimpleProject.Services.Implementations
                     _context.ProductsImages.AddRange(productImages);
 
                     await _context.SaveChangesAsync();
+                    await trans.CommitAsync();
 
                 }
                 return "Success";
             }
             catch (Exception ex)
             {
+                await trans.RollbackAsync();
+                foreach (var file in pathList)
+                {
+                    _fileService.DeletePhysicalFile(file);
+                }
                 return ex.Message + "--" + ex.InnerException;
             }
         }
@@ -87,6 +93,11 @@ namespace SimpleProject.Services.Implementations
         public async Task<List<Product>> GetProducts()
         {
             return await _context.Product.ToListAsync();
+        }
+
+        public string GetTitle()
+        {
+            return "Home Title";
         }
 
         public async Task<bool> IsProductNameExistAsync(string productName)
