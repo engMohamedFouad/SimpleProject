@@ -26,6 +26,16 @@ namespace SimpleProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            //var originProduct = new Product();
+            //// var userName = Request.Cookies["userName"];
+            //var product = HttpContext.Session.Get("product");
+            //if (product != null)
+            //{
+            //    originProduct = JsonSerializer.Deserialize<Product>(product);
+            //}
+            ////var userId = HttpContext.Session.GetInt32("userId");
+            ////var userName = HttpContext.Session.GetString("userName");
+            //ViewBag.UserName = originProduct?.Name;
             var products = await _productService.GetProducts();
             ViewBag.count = products.Count();
             return View(products);
@@ -55,16 +65,19 @@ namespace SimpleProject.Controllers
                     if (result != "Success")
                     {
                         ModelState.AddModelError(string.Empty, result);
+                        TempData["Failed"] = result;
                         return View(model);
                     }
+                    TempData["Success"] = "Create Successfully";
                     return RedirectToAction(nameof(Index));
                 }
                 ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
                 return View(model);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
+                TempData["Failed"] = ex.Message + "--" + ex.InnerException;
                 return View(model);
             }
 
