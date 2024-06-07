@@ -52,9 +52,10 @@ namespace SimpleProject.Services.Implementations
                     _context.ProductsImages.AddRange(productImages);
 
                     await _context.SaveChangesAsync();
-                    await trans.CommitAsync();
+
 
                 }
+                await trans.CommitAsync();
                 return "Success";
             }
             catch (Exception ex)
