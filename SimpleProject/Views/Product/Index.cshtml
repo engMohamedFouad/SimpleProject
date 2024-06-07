@@ -1,4 +1,7 @@
-﻿@model IEnumerable<SimpleProject.Models.Product>
+﻿@using Microsoft.Extensions.Localization
+@using SimpleProject.Resources
+@inject IStringLocalizer<SharedResources> _sharedResources;
+@model IEnumerable<SimpleProject.Models.Product>
 
 <partial name="_Notifications"></partial>
 <h1>@ViewBag.UserName</h1>
@@ -15,7 +18,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @_sharedResources[SharedResourcesKeys.Price]
             </th>
            
             <th></th>

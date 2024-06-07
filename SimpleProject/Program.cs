@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using SimpleProject.Data;
 using SimpleProject.Services.Implementations;
 using SimpleProject.Services.Interfaces;
+using System.Globalization;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +34,29 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = ".SimpleProject";
 
 });
+
+#region Localization
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization(opt =>
+    {
+        opt.ResourcesPath = "";
+    });
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+    {
+        List<CultureInfo> supportedCultures = new List<CultureInfo>
+        {
+            new CultureInfo("en-US"),
+            new CultureInfo("ar-EG")
+        };
+
+        options.DefaultRequestCulture = new RequestCulture("en-US");
+        options.SupportedCultures = supportedCultures;
+        options.SupportedUICultures = supportedCultures;
+    });
+
+#endregion
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
