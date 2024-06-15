@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SimpleProject.Data;
 using SimpleProject.Services.Implementations;
 using SimpleProject.Services.Interfaces;
@@ -36,8 +37,7 @@ builder.Services.AddSession(options =>
 });
 
 #region Localization
-
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddViewLocalization();
 builder.Services.AddLocalization(opt =>
     {
         opt.ResourcesPath = "";
@@ -68,6 +68,13 @@ else
     app.UseExceptionHandler("/home/error");
     app.UseHsts();
 }
+
+#region Localization Middleware
+
+var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options!.Value);
+
+#endregion
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -77,6 +84,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSession();
+
 //app.MapDefaultControllerRoute();
 
 

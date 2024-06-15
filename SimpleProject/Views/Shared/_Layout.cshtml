@@ -31,6 +31,9 @@
                         hello: @_contextAccessor.HttpContext?.Session.GetString("userName")
                     </li>
                 </ul> *@
+                <div class="col-md-6 text-right">
+                    @await Html.PartialAsync("_SelectLanguagePartial")
+                </div>
             </div>
         </div>
     </nav>
