@@ -6,7 +6,7 @@ namespace SimpleProject.ViewModels
 {
     public class AddProductViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "NameIsRequired")]
         [Remote("IsProductNameExist", "Product", HttpMethod = "Post", ErrorMessage = "Name Is Already Exist")]
         public string Name { get; set; }
         [Range(1, double.MaxValue, ErrorMessage = "Min Value equal 1 and Max Value equal 500000")]
