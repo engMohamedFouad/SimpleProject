@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SimpleProject.Data;
+using SimpleProject.Resources;
 using SimpleProject.Services.Implementations;
 using SimpleProject.Services.Interfaces;
 using System.Globalization;
@@ -37,7 +38,13 @@ builder.Services.AddSession(options =>
 });
 
 #region Localization
-builder.Services.AddControllersWithViews().AddViewLocalization();
+builder.Services.AddControllersWithViews()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider=(type, factory) =>
+                    factory.Create(typeof(SharedResources));
+                });
 builder.Services.AddLocalization(opt =>
     {
         opt.ResourcesPath = "";

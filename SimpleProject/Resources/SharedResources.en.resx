@@ -123,6 +123,9 @@
   <data name="Name" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="NameIsRequired" xml:space="preserve">
+    <value>Name Is Required</value>
+  </data>
   <data name="Price" xml:space="preserve">
     <value>Price</value>
   </data>
