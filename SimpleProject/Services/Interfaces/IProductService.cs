@@ -9,7 +9,8 @@ namespace SimpleProject.Services.Interfaces
         public Task<string> AddProduct(Product product, List<IFormFile>? files);
         public Task<string> UpdateProduct(Product product);
         public Task<string> DeleteProduct(Product product);
-        public Task<bool> IsProductNameExistAsync(string productName);
+        public Task<bool> IsProductNameArExistAsync(string nameAr);
+        public Task<bool> IsProductNameEnExistAsync(string nameEn);
         public string GetTitle();
     }
 }

@@ -7,13 +7,13 @@
 <h1 class="text-center">@_productService.GetTitle()</h1>
 @foreach(var item in Model)
 {
-    <h1>@item.Name</h1>
+    <h1>@item.NameAr</h1>
     <div class="row">
     @foreach(var product in item.Products)
     {
             <div class="card col-lg-4 col-md-6 col-sm-12">
                 <div class="card-header">
-                    @product.Name
+                    @product.NameAr
                 </div>
                 <div class="card-body">
                     @product.Price

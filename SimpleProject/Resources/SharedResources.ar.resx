@@ -123,8 +123,8 @@
   <data name="Name" xml:space="preserve">
     <value>الاسم</value>
   </data>
-  <data name="NameIsRequired" xml:space="preserve">
-    <value>الاسم مطلوب</value>
+  <data name="NameArIsRequired" xml:space="preserve">
+    <value>الاسم  بالعربي مطلوب</value>
   </data>
   <data name="Price" xml:space="preserve">
     <value>السعر</value>
