@@ -26,19 +26,10 @@ namespace SimpleProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            //var originProduct = new Product();
-            //// var userName = Request.Cookies["userName"];
-            //var product = HttpContext.Session.Get("product");
-            //if (product != null)
-            //{
-            //    originProduct = JsonSerializer.Deserialize<Product>(product);
-            //}
-            ////var userId = HttpContext.Session.GetInt32("userId");
-            ////var userName = HttpContext.Session.GetString("userName");
-            //ViewBag.UserName = originProduct?.Name;
             var products = await _productService.GetProducts();
-            ViewBag.count = products.Count();
-            return View(products);
+            var result = _mapper.Map<List<GetProductListViewModel>>(products);
+            ViewBag.count = result.Count();
+            return View(result);
         }
         [HttpGet]
         public async Task<IActionResult> Details(int id)
@@ -114,7 +105,8 @@ namespace SimpleProject.Controllers
                     //    }
                     //}
                     //product.Path = path;
-                    product.Name = model.Name;
+                    product.NameAr = model.NameAr;
+                    product.NameEn = model.NameEn;
                     product.Price = model.Price;
                     var result = await _productService.UpdateProduct(product);
                     if (result != "Success")
@@ -155,9 +147,17 @@ namespace SimpleProject.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> IsProductNameExist(string name)
+        public async Task<IActionResult> IsProductNameArExist(string nameAr)
         {
-            var result = await _productService.IsProductNameExistAsync(name);
+            var result = await _productService.IsProductNameArExistAsync(nameAr);
+            if (result)
+                return Json(false);
+            return Json(true);
+        }
+        [HttpPost]
+        public async Task<IActionResult> IsProductNameEnExist(string nameEn)
+        {
+            var result = await _productService.IsProductNameEnExistAsync(nameEn);
             if (result)
                 return Json(false);
             return Json(true);

@@ -9,6 +9,9 @@ namespace SimpleProject.Mapping
         public ProductProfile()
         {
             CreateMap<AddProductViewModel, Product>();
+
+            CreateMap<Product, GetProductListViewModel>()
+                .ForMember(des => des.Name, opt => opt.MapFrom(src => src.Localize(src.NameAr, src.NameEn)));
         }
     }
 }

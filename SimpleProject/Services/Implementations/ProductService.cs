@@ -101,11 +101,14 @@ namespace SimpleProject.Services.Implementations
             return "Home Title";
         }
 
-        public async Task<bool> IsProductNameExistAsync(string productName)
+        public async Task<bool> IsProductNameArExistAsync(string nameAr)
         {
-            return await _context.Product.AnyAsync(x => x.Name == productName);
+            return await _context.Product.AnyAsync(x => x.NameAr == nameAr);
         }
-
+        public async Task<bool> IsProductNameEnExistAsync(string nameEn)
+        {
+            return await _context.Product.AnyAsync(x => x.NameEn == nameEn);
+        }
         public async Task<string> UpdateProduct(Product product)
         {
             try
