@@ -9,7 +9,7 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 </head>
-<body>
+<body dir="@(CultureHelper.IsRightToLeft()?"rtl":"ltr")">
     <nav class="navbar navbar-expand-lg bg-body-tertiary container">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Navbar</a>
