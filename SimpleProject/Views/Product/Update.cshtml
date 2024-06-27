@@ -1,8 +1,9 @@
-﻿@model Product
+﻿@model UpdateProductViewModel
 
 <div>
     <form asp-action="Update" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Id" hidden/>
         <div>
             <label asp-for="NameAr"></label>
             <input asp-for="NameAr" class="form-control" />
@@ -18,16 +19,25 @@
             <input asp-for="Price" class="form-control" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
-       @*  <div>
-            <label>Current Image</label>
-            <img  src="@Model.Path" height="50" width="50"/>
-            <input asp-for="Path" type="hidden"/>
+         <div>
+            <label>Current Images</label>
+            @foreach(var path in Model.CurrentPaths)
+            {
+                <img src="@path" height="50" width="50" />
+                <input asp-for="CurrentPaths" hidden/>
+            }
         </div>
         <div>
-            <label asp-for="File"></label>
-            <input type="file" asp-for="File" class="form-control" value="0" />
-            <span asp-validation-for="File" class="text-danger"></span>
-        </div> *@
+            <label asp-for="Files"></label>
+            <input type="file" asp-for="Files" class="form-control" value="0" multiple/>
+            <span asp-validation-for="Files" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="CategoryId"></label>
+            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.categories">
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
         <div>
             <input type="submit" value="Update" class="btn btn-primary" />
         </div>

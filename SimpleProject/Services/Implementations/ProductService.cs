@@ -28,33 +28,9 @@ namespace SimpleProject.Services.Implementations
                 await _context.Product.AddAsync(product);
                 await _context.SaveChangesAsync();
 
-
-                if (files != null && files.Count() > 0)
-                {
-                    foreach (var file in files)
-                    {
-                        var path = await _fileService.Upload(file, "/images/");
-                        if (!path.StartsWith("/images/"))
-                        {
-                            return path;
-                        }
-                        pathList.Add(path);
-                    }
-
-                    var productImages = new List<ProductImages>();
-                    foreach (var file in pathList)
-                    {
-                        var productImage = new ProductImages();
-                        productImage.ProductId = product.Id;
-                        productImage.Path = file;
-                        productImages.Add(productImage);
-                    }
-                    _context.ProductsImages.AddRange(productImages);
-
-                    await _context.SaveChangesAsync();
-
-
-                }
+                var result = await AddProductImages(files, product.Id);
+                if (result.Item1==null&&result.Item2!="Success") return result.Item2;
+                pathList=result.Item1;
                 await trans.CommitAsync();
                 return "Success";
             }
@@ -86,11 +62,14 @@ namespace SimpleProject.Services.Implementations
 
         }
 
-        public async Task<Product?> GetProductById(int id)
+        public async Task<Product?> GetProductByIdAsync(int id)
+        {
+            return await _context.Product.Include(x => x.ProductsImages).FirstOrDefaultAsync(x => x.Id==id);
+        }
+        public async Task<Product?> GetProductByIdWithoutIncludeAsync(int id)
         {
             return await _context.Product.FindAsync(id);
         }
-
         public async Task<List<Product>> GetProducts()
         {
             return await _context.Product.ToListAsync();
@@ -105,23 +84,86 @@ namespace SimpleProject.Services.Implementations
         {
             return await _context.Product.AnyAsync(x => x.NameAr == nameAr);
         }
+
+        public async Task<bool> IsProductNameArExistExcludeItselfAsync(string nameAr, int id)
+        {
+            return await _context.Product.AnyAsync(x => x.NameAr == nameAr&&x.Id!=id);
+        }
+
         public async Task<bool> IsProductNameEnExistAsync(string nameEn)
         {
             return await _context.Product.AnyAsync(x => x.NameEn == nameEn);
         }
-        public async Task<string> UpdateProduct(Product product)
+        public async Task<string> UpdateProduct(Product product, List<IFormFile>? files)
         {
+            var pathList = new List<string>();
+            var trans = await _context.Database.BeginTransactionAsync();
             try
             {
                 _context.Product.Update(product);
                 await _context.SaveChangesAsync();
+
+                if (files!= null&&files.Count()>0)
+                {
+                    var productImages = await _context.ProductsImages.Where(x => x.ProductId==product.Id).ToListAsync();
+                    if (productImages.Count()>0)
+                    {
+                        var pathes = productImages.Select(x => x.Path).ToList();
+                        _context.ProductsImages.RemoveRange(productImages);
+                        await _context.SaveChangesAsync();
+                        //delete Files Physically
+                        foreach (var file in pathes)
+                        {
+                            _fileService.DeletePhysicalFile(file);
+                        }
+                    }
+                    var result = await AddProductImages(files, product.Id);
+                    if (result.Item1==null&&result.Item2!="Success") return result.Item2;
+                    pathList=result.Item1;
+                }
+                await trans.CommitAsync();
                 return "Success";
             }
             catch (Exception ex)
             {
+                await trans.RollbackAsync();
+                foreach (var file in pathList)
+                {
+                    _fileService.DeletePhysicalFile(file);
+                }
                 return ex.Message + "--" + ex.InnerException;
             }
 
+        }
+
+        private async Task<(List<string>?, string)> AddProductImages(List<IFormFile>? files, int productId)
+        {
+            var pathList = new List<string>();
+            if (files != null && files.Count() > 0)
+            {
+                foreach (var file in files)
+                {
+                    var path = await _fileService.Upload(file, "/images/");
+                    if (!path.StartsWith("/images/"))
+                    {
+                        return (null, path);
+                    }
+                    pathList.Add(path);
+                }
+
+                var productImages = new List<ProductImages>();
+                foreach (var file in pathList)
+                {
+                    var productImage = new ProductImages();
+                    productImage.ProductId = productId;
+                    productImage.Path = file;
+                    productImages.Add(productImage);
+                }
+                _context.ProductsImages.AddRange(productImages);
+
+                await _context.SaveChangesAsync();
+            }
+            return (pathList, "Success");
         }
         #endregion
     }
