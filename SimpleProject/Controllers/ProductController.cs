@@ -151,5 +151,14 @@ namespace SimpleProject.Controllers
                 return Json(false);
             return Json(true);
         }
+        [HttpPost]
+        public async Task<IActionResult> IsProductNameArExistExcludeItself(string nameAr, int id)
+        {
+            var result = await _productService.IsProductNameArExistExcludeItselfAsync(nameAr, id);
+            if (result)
+                return Json(false);
+            return Json(true);
+        }
+
     }
 }

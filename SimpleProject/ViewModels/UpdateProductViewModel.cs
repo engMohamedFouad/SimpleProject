@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SimpleProject.ViewModels
@@ -7,6 +8,7 @@ namespace SimpleProject.ViewModels
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "NameArIsRequired")]
+        [Remote("IsProductNameArExistExcludeItself", "Product", HttpMethod = "Post", AdditionalFields = "Id", ErrorMessage = "Name Ar Is Already Exist")]
         public string NameAr { get; set; }
 
         [Required(ErrorMessage = "NameEnIsRequired")]

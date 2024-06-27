@@ -84,6 +84,12 @@ namespace SimpleProject.Services.Implementations
         {
             return await _context.Product.AnyAsync(x => x.NameAr == nameAr);
         }
+
+        public async Task<bool> IsProductNameArExistExcludeItselfAsync(string nameAr, int id)
+        {
+            return await _context.Product.AnyAsync(x => x.NameAr == nameAr&&x.Id!=id);
+        }
+
         public async Task<bool> IsProductNameEnExistAsync(string nameEn)
         {
             return await _context.Product.AnyAsync(x => x.NameEn == nameEn);
