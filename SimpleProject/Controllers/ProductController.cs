@@ -34,13 +34,13 @@ namespace SimpleProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var product = await _productService.GetProductById(id);
+            var product = await _productService.GetProductByIdAsync(id);
             return View(product);
         }
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "Name");
+            ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "NameAr");
             return View();
         }
         [HttpPost]
@@ -77,41 +77,29 @@ namespace SimpleProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var product = await _productService.GetProductById(id);
+            var product = await _productService.GetProductByIdAsync(id);
             if (product == null) return NotFound();
-            return View(product);
+            var response = _mapper.Map<UpdateProductViewModel>(product);
+            ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "NameAr");
+            return View(response);
         }
         [HttpPost]
-        public async Task<IActionResult> Update(int id, Product model)
+        public async Task<IActionResult> Update(int id, UpdateProductViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     if (id != model.Id) return NotFound();
-                    var product = await _productService.GetProductById(id);
+                    var product = await _productService.GetProductByIdWithoutIncludeAsync(id);
                     if (product == null) return NotFound();
 
-                    //var path = model.Path;
-                    //if (model.File?.Length > 0)
-                    //{
-                    //    //Delete Old Physical File
-                    //    _fileService.DeletePhysicalFile(path);
-                    //    //Upload new Image
-                    //    path = await _fileService.Upload(model.File, "/images/");
-                    //    if (path == "Problem")
-                    //    {
-                    //        return BadRequest();
-                    //    }
-                    //}
-                    //product.Path = path;
-                    product.NameAr = model.NameAr;
-                    product.NameEn = model.NameEn;
-                    product.Price = model.Price;
-                    var result = await _productService.UpdateProduct(product);
+                    var newProduct = _mapper.Map(model, product);
+                    var result = await _productService.UpdateProduct(newProduct, model.Files);
                     if (result != "Success")
                     {
                         ModelState.AddModelError(string.Empty, result);
+                        ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "NameAr");
                         return View(model);
                     }
                     return RedirectToAction(nameof(Index));
@@ -120,6 +108,7 @@ namespace SimpleProject.Controllers
             }
             catch (Exception)
             {
+                ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "NameAr");
                 return View(model);
             }
         }
@@ -127,7 +116,7 @@ namespace SimpleProject.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _productService.GetProductById(id);
+            var product = await _productService.GetProductByIdWithoutIncludeAsync(id);
             if (product == null) return NotFound();
             return View(product);
         }
@@ -136,7 +125,7 @@ namespace SimpleProject.Controllers
         {
             try
             {
-                var product = await _productService.GetProductById(id);
+                var product = await _productService.GetProductByIdWithoutIncludeAsync(id);
                 if (product == null) return NotFound();
                 await _productService.DeleteProduct(product);
                 return RedirectToAction(nameof(Index));

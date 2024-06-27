@@ -12,6 +12,11 @@ namespace SimpleProject.Mapping
 
             CreateMap<Product, GetProductListViewModel>()
                 .ForMember(des => des.Name, opt => opt.MapFrom(src => src.Localize(src.NameAr, src.NameEn)));
+
+            CreateMap<Product, UpdateProductViewModel>()
+                 .ForMember(des => des.CurrentPaths, opt => opt.MapFrom(src => src.ProductsImages.Select(x => x.Path).ToList()));
+
+            CreateMap<UpdateProductViewModel, Product>();
         }
     }
 }
