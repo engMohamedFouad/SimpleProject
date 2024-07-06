@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SimpleProject.Data;
+using SimpleProject.Repositories.Implementations;
+using SimpleProject.Repositories.Interfaces;
 using SimpleProject.Resources;
 using SimpleProject.Services.Implementations;
 using SimpleProject.Services.Interfaces;
+using SimpleProject.SharedRepositories;
 using System.Globalization;
 using System.Reflection;
 
@@ -20,6 +23,9 @@ builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddTransient<IProductImagesRepository, ProductImagesRepository>();
 
 builder.Services.AddControllersWithViews();
 

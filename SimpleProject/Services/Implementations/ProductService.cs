@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SimpleProject.Data;
 using SimpleProject.Models;
+using SimpleProject.Repositories.Interfaces;
 using SimpleProject.Services.Interfaces;
 
 namespace SimpleProject.Services.Implementations
@@ -8,25 +8,26 @@ namespace SimpleProject.Services.Implementations
     public class ProductService : IProductService
     {
         #region Fields
-        private readonly ApplicationDbContext _context;
+        private readonly IProductRepository _productRepository;
+        private readonly IProductImagesRepository _productImagesRepository;
         private readonly IFileService _fileService;
         #endregion
         #region Constructors
-        public ProductService(IFileService fileService, ApplicationDbContext context)
+        public ProductService(IFileService fileService, IProductRepository productRepository, IProductImagesRepository productImagesRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
             _fileService = fileService;
+            _productImagesRepository=productImagesRepository;
         }
         #endregion
         #region Implement functions
         public async Task<string> AddProduct(Product product, List<IFormFile>? files)
         {
             var pathList = new List<string>();
-            var trans = await _context.Database.BeginTransactionAsync();
+            var trans = await _productRepository.BeginTransactionAsync();
             try
             {
-                await _context.Product.AddAsync(product);
-                await _context.SaveChangesAsync();
+                await _productRepository.AddAsync(product);
 
                 var result = await AddProductImages(files, product.Id);
                 if (result.Item1==null&&result.Item2!="Success") return result.Item2;
@@ -50,8 +51,7 @@ namespace SimpleProject.Services.Implementations
             try
             {
                 //string path = product.Path;
-                _context.Product.Remove(product);
-                await _context.SaveChangesAsync();
+                await _productRepository.Deletesync(product);
                 //_fileService.DeletePhysicalFile(path);
                 return "Success";
             }
@@ -64,15 +64,15 @@ namespace SimpleProject.Services.Implementations
 
         public async Task<Product?> GetProductByIdAsync(int id)
         {
-            return await _context.Product.Include(x => x.ProductsImages).FirstOrDefaultAsync(x => x.Id==id);
+            return await _productRepository.GetAsQueryable().Include(x => x.ProductsImages).FirstOrDefaultAsync(x => x.Id==id);
         }
         public async Task<Product?> GetProductByIdWithoutIncludeAsync(int id)
         {
-            return await _context.Product.FindAsync(id);
+            return await _productRepository.GetByIdAsync(id);
         }
         public async Task<List<Product>> GetProducts()
         {
-            return await _context.Product.ToListAsync();
+            return await _productRepository.GetListAsync();
         }
 
         public string GetTitle()
@@ -82,35 +82,33 @@ namespace SimpleProject.Services.Implementations
 
         public async Task<bool> IsProductNameArExistAsync(string nameAr)
         {
-            return await _context.Product.AnyAsync(x => x.NameAr == nameAr);
+            return await _productRepository.GetAsQueryable().AnyAsync(x => x.NameAr == nameAr);
         }
 
         public async Task<bool> IsProductNameArExistExcludeItselfAsync(string nameAr, int id)
         {
-            return await _context.Product.AnyAsync(x => x.NameAr == nameAr&&x.Id!=id);
+            return await _productRepository.GetAsQueryable().AnyAsync(x => x.NameAr == nameAr&&x.Id!=id);
         }
 
         public async Task<bool> IsProductNameEnExistAsync(string nameEn)
         {
-            return await _context.Product.AnyAsync(x => x.NameEn == nameEn);
+            return await _productRepository.GetAsQueryable().AnyAsync(x => x.NameEn == nameEn);
         }
         public async Task<string> UpdateProduct(Product product, List<IFormFile>? files)
         {
             var pathList = new List<string>();
-            var trans = await _context.Database.BeginTransactionAsync();
+            var trans = await _productRepository.BeginTransactionAsync();
             try
             {
-                _context.Product.Update(product);
-                await _context.SaveChangesAsync();
+                await _productRepository.Updatesync(product);
 
                 if (files!= null&&files.Count()>0)
                 {
-                    var productImages = await _context.ProductsImages.Where(x => x.ProductId==product.Id).ToListAsync();
+                    var productImages = await _productImagesRepository.GetAsQueryable().Where(x => x.ProductId==product.Id).ToListAsync();
                     if (productImages.Count()>0)
                     {
                         var pathes = productImages.Select(x => x.Path).ToList();
-                        _context.ProductsImages.RemoveRange(productImages);
-                        await _context.SaveChangesAsync();
+                        await _productImagesRepository.DeleteRangeAsync(productImages);
                         //delete Files Physically
                         foreach (var file in pathes)
                         {
@@ -159,9 +157,7 @@ namespace SimpleProject.Services.Implementations
                     productImage.Path = file;
                     productImages.Add(productImage);
                 }
-                _context.ProductsImages.AddRange(productImages);
-
-                await _context.SaveChangesAsync();
+                await _productImagesRepository.AddRangeAsync(productImages);
             }
             return (pathList, "Success");
         }
