@@ -1,47 +1,57 @@
 ﻿@using Microsoft.Extensions.Localization
 @using SimpleProject.Resources
 @inject IStringLocalizer<SharedResources> _sharedResources;
-@model IEnumerable<SimpleProject.ViewModels.GetProductListViewModel>
+@model IEnumerable<GetProductListViewModel>
 
 <partial name="_Notifications"></partial>
 <h1>@ViewBag.UserName</h1>
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>
-                @_sharedResources[SharedResourcesKeys.Id]
-            </th>
-            <th>
-                @_sharedResources[SharedResourcesKeys.Name]
-            </th>
-            <th>
-                @_sharedResources[SharedResourcesKeys.Price]
-            </th>
-           
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-info"> details</a>
-                    <a asp-action="Update" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-primary">Update</a>
-                    <a asp-action="Delete" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div>
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
+    </p>
+    <div class="d-flex">
+        <div>
+            <form asp-action="Index" method="get">
+                <input type="text" id="search" name="search" value="@ViewBag.currentSearch" placeholder="search ..." />
+                <input type="submit" value="search" />
+            </form>
+        </div>
+        <div>
+            <input type="text" id="searchtext" value="@ViewBag.currentSearch" placeholder="search Using special event" />
+        </div>
+    </div>
+   
+</div>
+
+<div id="productData">
+    @await Html.PartialAsync("_ProductList",Model)
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#searchtext").on('input', function () {
+            var searchString = $(this).val();
+            $.ajax({
+                url:'@Url.Action("searchProductList","Product")',
+                type:'Get',
+                data: { searchText: searchString },
+                success: function (data) {
+                    var itemList = $('#productList');
+                    itemList.empty();
+                    $.each(data.result, function (index, item) {
+                        console.log(item)
+                        var row = '<tr>' +
+                            '<td>' + item.id + '</td>' +
+                            '<td>' + item.name + '</td>' +
+                            '<td>' + item.price + '</td>'+
+                            '<td> <a href="/Product/Details/' + item.id+'"class="btn btn-info">Details</a></td>'+
+                            '<td> <a href="/Product/Update/' + item.id + '"class="btn btn-primary">Update</a></td>' +
+                            '<td> <a href="/Product/Delete/' + item.id + '"class="btn btn-danger">Delete</a></td>'
+                            + '</tr>';
+                            itemList.append(row)
+                    });
+                }
+            })
+        })
+    })
+</script>

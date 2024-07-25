@@ -5,6 +5,7 @@ namespace SimpleProject.Services.Interfaces
     public interface IProductService
     {
         public Task<List<Product>> GetProducts();
+        public IQueryable<Product> GetProductsAsQuerayable(string? search);
         public Task<Product?> GetProductByIdAsync(int id);
         public Task<Product?> GetProductByIdWithoutIncludeAsync(int id);
         public Task<string> AddProduct(Product product, List<IFormFile>? files);

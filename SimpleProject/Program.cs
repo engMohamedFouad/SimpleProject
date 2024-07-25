@@ -26,6 +26,7 @@ builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddTransient<IProductImagesRepository, ProductImagesRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddControllersWithViews();
 

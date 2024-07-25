@@ -1,0 +1,29 @@
+﻿@model UpdateCategoryViewModel
+
+<div>
+    <form asp-action="Update" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Id" hidden />
+        <div>
+            <label asp-for="NameAr"></label>
+            <input asp-for="NameAr" class="form-control" />
+            <span asp-validation-for="NameAr" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="NameEn"></label>
+            <input asp-for="NameEn" class="form-control" />
+            <span asp-validation-for="NameEn" class="text-danger"></span>
+        </div>
+
+        <div class="mt-3">
+            <input type="submit" value="Update" class="btn btn-primary" />
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScript");
+    }
+}

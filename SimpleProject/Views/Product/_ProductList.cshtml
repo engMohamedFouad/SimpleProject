@@ -1,0 +1,43 @@
+﻿@using Microsoft.Extensions.Localization
+@using SimpleProject.Resources
+@inject IStringLocalizer<SharedResources> _sharedResources;
+@model IEnumerable<GetProductListViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @_sharedResources[SharedResourcesKeys.Id]
+            </th>
+            <th>
+                @_sharedResources[SharedResourcesKeys.Name]
+            </th>
+            <th>
+                @_sharedResources[SharedResourcesKeys.Price]
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="productList">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-info"> details</a>
+                    <a asp-action="Update" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-primary">Update</a>
+                    <a asp-action="Delete" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
