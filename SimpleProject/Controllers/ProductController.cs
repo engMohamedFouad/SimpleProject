@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SimpleProject.Models;
 using SimpleProject.Services.Interfaces;
-using SimpleProject.ViewModels;
+using SimpleProject.ViewModels.Products;
 
 namespace SimpleProject.Controllers
 {
@@ -24,13 +25,25 @@ namespace SimpleProject.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search)
         {
-            var products = await _productService.GetProducts();
-            var result = _mapper.Map<List<GetProductListViewModel>>(products);
+            ViewBag.currentSearch=search;
+            var products = _productService.GetProductsAsQuerayable(search);
+            var result = await _mapper.ProjectTo<GetProductListViewModel>(products).ToListAsync();
             ViewBag.count = result.Count();
             return View(result);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> searchProductList(string? searchText)
+        {
+            ViewBag.currentSearchJQuery=searchText;
+            var products = _productService.GetProductsAsQuerayable(searchText);
+            var result = await _mapper.ProjectTo<GetProductListViewModel>(products).ToListAsync();
+            ViewBag.count = result.Count();
+            return Json(new { result = result });
+        }
+
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {

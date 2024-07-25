@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SimpleProject.Models;
-using SimpleProject.ViewModels;
+using SimpleProject.ViewModels.Products;
 
 namespace SimpleProject.Mapping
 {

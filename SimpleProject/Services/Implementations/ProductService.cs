@@ -75,6 +75,16 @@ namespace SimpleProject.Services.Implementations
             return await _productRepository.GetListAsync();
         }
 
+        public IQueryable<Product> GetProductsAsQuerayable(string? search)
+        {
+            var products = _productRepository.GetAsQueryable();
+            if (!string.IsNullOrEmpty(search))
+            {
+                products=products.Where(x => x.NameAr.Contains(search)||x.NameEn.Contains(search));
+            }
+            return products;
+        }
+
         public string GetTitle()
         {
             return "Home Title";

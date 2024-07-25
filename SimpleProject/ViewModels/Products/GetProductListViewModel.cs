@@ -1,4 +1,4 @@
-﻿namespace SimpleProject.ViewModels
+﻿namespace SimpleProject.ViewModels.Products
 {
     public class GetProductListViewModel
     {
