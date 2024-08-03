@@ -1,33 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleProject.Models;
-using SimpleProject.Repositories.Interfaces;
 using SimpleProject.Services.Interfaces;
+using SimpleProject.UnitOfWorks;
 
 namespace SimpleProject.Services.Implementations
 {
     public class ProductService : IProductService
     {
         #region Fields
-        private readonly IProductRepository _productRepository;
-        private readonly IProductImagesRepository _productImagesRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IFileService _fileService;
         #endregion
         #region Constructors
-        public ProductService(IFileService fileService, IProductRepository productRepository, IProductImagesRepository productImagesRepository)
+        public ProductService(IFileService fileService, IUnitOfWork unitOfWork)
         {
-            _productRepository = productRepository;
             _fileService = fileService;
-            _productImagesRepository=productImagesRepository;
+            _unitOfWork=unitOfWork;
         }
         #endregion
         #region Implement functions
         public async Task<string> AddProduct(Product product, List<IFormFile>? files)
         {
             var pathList = new List<string>();
-            var trans = await _productRepository.BeginTransactionAsync();
+            var trans = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _productRepository.AddAsync(product);
+                await _unitOfWork.Repository<Product>().AddAsync(product);
 
                 var result = await AddProductImages(files, product.Id);
                 if (result.Item1==null&&result.Item2!="Success") return result.Item2;
@@ -51,7 +49,7 @@ namespace SimpleProject.Services.Implementations
             try
             {
                 //string path = product.Path;
-                await _productRepository.Deletesync(product);
+                await _unitOfWork.Repository<Product>().Deletesync(product);
                 //_fileService.DeletePhysicalFile(path);
                 return "Success";
             }
@@ -64,20 +62,20 @@ namespace SimpleProject.Services.Implementations
 
         public async Task<Product?> GetProductByIdAsync(int id)
         {
-            return await _productRepository.GetAsQueryable().Include(x => x.ProductsImages).FirstOrDefaultAsync(x => x.Id==id);
+            return await _unitOfWork.Repository<Product>().GetAsQueryable().Include(x => x.ProductsImages).FirstOrDefaultAsync(x => x.Id==id);
         }
         public async Task<Product?> GetProductByIdWithoutIncludeAsync(int id)
         {
-            return await _productRepository.GetByIdAsync(id);
+            return await _unitOfWork.Repository<Product>().GetByIdAsync(id);
         }
         public async Task<List<Product>> GetProducts()
         {
-            return await _productRepository.GetListAsync();
+            return await _unitOfWork.Repository<Product>().GetListAsync();
         }
 
         public IQueryable<Product> GetProductsAsQuerayable(string? search)
         {
-            var products = _productRepository.GetAsQueryable();
+            var products = _unitOfWork.Repository<Product>().GetAsQueryable();
             if (!string.IsNullOrEmpty(search))
             {
                 products=products.Where(x => x.NameAr.Contains(search)||x.NameEn.Contains(search));
@@ -92,33 +90,33 @@ namespace SimpleProject.Services.Implementations
 
         public async Task<bool> IsProductNameArExistAsync(string nameAr)
         {
-            return await _productRepository.GetAsQueryable().AnyAsync(x => x.NameAr == nameAr);
+            return await _unitOfWork.Repository<Product>().GetAsQueryable().AnyAsync(x => x.NameAr == nameAr);
         }
 
         public async Task<bool> IsProductNameArExistExcludeItselfAsync(string nameAr, int id)
         {
-            return await _productRepository.GetAsQueryable().AnyAsync(x => x.NameAr == nameAr&&x.Id!=id);
+            return await _unitOfWork.Repository<Product>().GetAsQueryable().AnyAsync(x => x.NameAr == nameAr&&x.Id!=id);
         }
 
         public async Task<bool> IsProductNameEnExistAsync(string nameEn)
         {
-            return await _productRepository.GetAsQueryable().AnyAsync(x => x.NameEn == nameEn);
+            return await _unitOfWork.Repository<Product>().GetAsQueryable().AnyAsync(x => x.NameEn == nameEn);
         }
         public async Task<string> UpdateProduct(Product product, List<IFormFile>? files)
         {
             var pathList = new List<string>();
-            var trans = await _productRepository.BeginTransactionAsync();
+            var trans = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                await _productRepository.Updatesync(product);
+                await _unitOfWork.Repository<Product>().Updatesync(product);
 
                 if (files!= null&&files.Count()>0)
                 {
-                    var productImages = await _productImagesRepository.GetAsQueryable().Where(x => x.ProductId==product.Id).ToListAsync();
+                    var productImages = await _unitOfWork.Repository<ProductImages>().GetAsQueryable().Where(x => x.ProductId==product.Id).ToListAsync();
                     if (productImages.Count()>0)
                     {
                         var pathes = productImages.Select(x => x.Path).ToList();
-                        await _productImagesRepository.DeleteRangeAsync(productImages);
+                        await _unitOfWork.Repository<ProductImages>().DeleteRangeAsync(productImages);
                         //delete Files Physically
                         foreach (var file in pathes)
                         {
@@ -167,7 +165,7 @@ namespace SimpleProject.Services.Implementations
                     productImage.Path = file;
                     productImages.Add(productImage);
                 }
-                await _productImagesRepository.AddRangeAsync(productImages);
+                await _unitOfWork.Repository<ProductImages>().AddRangeAsync(productImages);
             }
             return (pathList, "Success");
         }

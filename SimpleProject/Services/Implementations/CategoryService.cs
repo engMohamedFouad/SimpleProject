@@ -1,60 +1,60 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleProject.Models;
-using SimpleProject.Repositories.Interfaces;
 using SimpleProject.Services.Interfaces;
+using SimpleProject.UnitOfWorks;
 
 namespace SimpleProject.Services.Implementations
 {
     public class CategoryService : ICategoryService
     {
         #region Fields
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         #endregion
         #region Constructors
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(IUnitOfWork unitOfWork)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
         #endregion
         #region Handle Function
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            return await _categoryRepository.GetListAsync();
+            return await _unitOfWork.Repository<Category>().GetListAsync();
         }
 
         public async Task<Category?> GetCategoryByIdAsync(int id)
         {
-            return await _categoryRepository.GetAsQueryable().FirstOrDefaultAsync(x => x.Id == id);
+            return await _unitOfWork.Repository<Category>().GetAsQueryable().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Category?> GetCategoryByIdWithoutIncludeAsync(int id)
         {
-            return await _categoryRepository.GetByIdAsync(id);
+            return await _unitOfWork.Repository<Category>().GetByIdAsync(id);
         }
 
         public async Task<bool> IsCategoryNameArExistAsync(string nameAr)
         {
-            return await _categoryRepository.GetAsQueryable().AnyAsync(x => x.NameAr==nameAr);
+            return await _unitOfWork.Repository<Category>().GetAsQueryable().AnyAsync(x => x.NameAr==nameAr);
         }
 
         public async Task<bool> IsCategoryNameArExistExcludeItselfAsync(string nameAr, int id)
         {
-            return await _categoryRepository.GetAsQueryable().AnyAsync(x => x.NameAr==nameAr&&x.Id!=id);
+            return await _unitOfWork.Repository<Category>().GetAsQueryable().AnyAsync(x => x.NameAr==nameAr&&x.Id!=id);
         }
 
         public async Task<bool> IsCategoryNameEnExistAsync(string nameEn)
         {
-            return await _categoryRepository.GetAsQueryable().AnyAsync(x => x.NameEn==nameEn);
+            return await _unitOfWork.Repository<Category>().GetAsQueryable().AnyAsync(x => x.NameEn==nameEn);
         }
         public async Task<bool> IsCategoryNameEnExistExcludeItselfAsync(string nameEn, int id)
         {
-            return await _categoryRepository.GetAsQueryable().AnyAsync(x => x.NameEn==nameEn&&x.Id!=id);
+            return await _unitOfWork.Repository<Category>().GetAsQueryable().AnyAsync(x => x.NameEn==nameEn&&x.Id!=id);
         }
         public async Task<string> UpdateCategoryAsync(Category Category)
         {
             try
             {
-                await _categoryRepository.Updatesync(Category);
+                await _unitOfWork.Repository<Category>().Updatesync(Category);
                 return "Success";
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace SimpleProject.Services.Implementations
         {
             try
             {
-                await _categoryRepository.AddAsync(Category);
+                await _unitOfWork.Repository<Category>().AddAsync(Category);
                 return "Success";
             }
             catch (Exception ex)
@@ -79,7 +79,7 @@ namespace SimpleProject.Services.Implementations
         {
             try
             {
-                await _categoryRepository.Deletesync(Category);
+                await _unitOfWork.Repository<Category>().Deletesync(Category);
                 return "Success";
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace SimpleProject.Services.Implementations
 
         public IQueryable<Category> GetCategoriesAsQuerayable(string? search)
         {
-            return _categoryRepository.GetAsQueryable();
+            return _unitOfWork.Repository<Category>().GetAsQueryable();
         }
 
 
