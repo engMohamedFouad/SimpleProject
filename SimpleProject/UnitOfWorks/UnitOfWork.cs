@@ -8,6 +8,8 @@ namespace SimpleProject.UnitOfWorks
     {
         private readonly ApplicationDbContext _context;
         private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
+        private IDbContextTransaction _transaction;
+        private bool IsDispose = false;
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -15,12 +17,13 @@ namespace SimpleProject.UnitOfWorks
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
-            return await _context.Database.BeginTransactionAsync();
+            _transaction=await _context.Database.BeginTransactionAsync();
+            return _transaction;
         }
 
         public async Task CommitTransactionAsync()
         {
-            await _context.Database.CommitTransactionAsync();
+            await _transaction.CommitAsync();
         }
 
         public async Task<int> CompleteAsync()
@@ -28,9 +31,23 @@ namespace SimpleProject.UnitOfWorks
             return await _context.SaveChangesAsync();
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDispose)
+            {
+                if (disposing)
+                {
+                    _transaction.Dispose();
+                    _context.Dispose();
+                }
+                IsDispose = true;
+            }
+        }
+
         public void Dispose()
         {
-            _context.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public IGenericRepository<T> Repository<T>() where T : class
@@ -47,7 +64,7 @@ namespace SimpleProject.UnitOfWorks
 
         public async Task RollbackTransactionAsync()
         {
-            await _context.Database.RollbackTransactionAsync();
+            await _transaction.RollbackAsync();
         }
     }
 }
