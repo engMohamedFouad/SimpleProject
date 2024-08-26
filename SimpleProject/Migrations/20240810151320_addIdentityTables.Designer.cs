@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleProject.Data;
 
@@ -11,9 +12,11 @@ using SimpleProject.Data;
 namespace SimpleProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240810151320_addIdentityTables")]
+    partial class addIdentityTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,11 +89,6 @@ namespace SimpleProject.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -142,10 +140,6 @@ namespace SimpleProject.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -299,24 +293,6 @@ namespace SimpleProject.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductsImages");
-                });
-
-            modelBuilder.Entity("SimpleProject.Models.Identity.User", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NameAr")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NameEn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

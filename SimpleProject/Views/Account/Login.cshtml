@@ -1,0 +1,51 @@
+﻿@model LoginViewModel
+
+<section class="mt-3 mb-3">
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="card-body p-5">
+                            <h2 class="text-uppercase text-center mb-5">Login</h2>
+
+                            <form asp-action="Login">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div data-mdb-input-init class="form-outline mb-4">
+                                    <label class="form-label">Email</label>
+                                    <input asp-for="Email" class="form-control form-control-lg" autocomplete="off"/>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+
+                                <div data-mdb-input-init class="form-outline mb-4">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" asp-for="Password" class="form-control form-control-lg" autocomplete="off"/>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" asp-for="RememberMe" /> Remember Me
+                                    </label>
+                                </div>
+                                <br />
+
+                                <div class="d-flex justify-content-center">
+                                    <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Login</button>
+                                </div>
+
+                               
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScript");
+    }
+}

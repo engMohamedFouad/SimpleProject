@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddServiceDependencyInjection()
                 .AddRepositoryDependencyInjection()
                 .AddLocalizationDependencyInjection()
-                .AddGeneralDependencyInjection(builder.Configuration);
+                .AddGeneralDependencyInjection(builder.Configuration)
+                .AddIdentityDependencyInjection();
 #endregion
 
 var app = builder.Build();

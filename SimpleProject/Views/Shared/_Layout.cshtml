@@ -1,4 +1,6 @@
 ﻿@inject IHttpContextAccessor _contextAccessor;
+@inject SignInManager<User> _signInManager;
+
 <!DOCTYPE html>
 
 <html>
@@ -28,15 +30,32 @@
                         <a asp-controller="Home" asp-action="Privacy" class="nav-link">Privacy</a>
                     </li>
                 </ul>
-               @*  <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <!-- hello: @_contextAccessor.HttpContext?.Request.Cookies["userName"]-->
-                        hello: @_contextAccessor.HttpContext?.Session.GetString("userName")
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item mt-2">
+                        @await Html.PartialAsync("_SelectLanguagePartial")
                     </li>
-                </ul> *@
-                <div class="col-md-6 text-right">
-                    @await Html.PartialAsync("_SelectLanguagePartial")
-                </div>
+                    @if (_signInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item">
+                            <form asp-action="Logout" asp-controller="Account" method="post">
+                                <button type="submit" class="nav-link btn btn-link py-0">
+                                    Logout @User.Identity.Name
+                                </button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a asp-controller="Account" asp-action="Register" class="nav-link">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Account" asp-action="Login" class="nav-link">LogIn</a>
+                        </li>
+                    }
+                   
+                </ul>
+               
             </div>
         </div>
     </nav>

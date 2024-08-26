@@ -37,7 +37,6 @@ namespace SimpleProject.UnitOfWorks
             {
                 if (disposing)
                 {
-                    _transaction.Dispose();
                     _context.Dispose();
                 }
                 IsDispose = true;
