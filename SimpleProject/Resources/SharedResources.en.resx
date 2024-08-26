@@ -129,4 +129,7 @@
   <data name="Price" xml:space="preserve">
     <value>Price</value>
   </data>
+  <data name="UsernameOrPasswordIsWrong" xml:space="preserve">
+    <value>Username Or Password Is Wrong</value>
+  </data>
 </root>

@@ -7,5 +7,6 @@
         public const string Id = "Id";
         public const string NameArIsRequired = "NameArIsRequired";
         public const string NameEnIsRequired = "NameEnIsRequired";
+        public const string UsernameOrPasswordIsWrong = "UsernameOrPasswordIsWrong";
     }
 }
