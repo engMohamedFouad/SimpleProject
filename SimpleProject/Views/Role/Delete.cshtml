@@ -1,0 +1,12 @@
+﻿@model GetRoleByIdViewModel
+
+<div class="text-center">
+    <h1>Are you sure you want to Delete this Role?</h1>
+
+    <hr />
+    <h3 class="text-center">@Model.Name</h3>
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class=" btn btn-primary">Back To List</a>
+    </form>
+</div>

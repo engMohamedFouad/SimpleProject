@@ -1,0 +1,29 @@
+﻿@model ManageUserClaimViewModel
+
+<form method="post">
+    <div class="card">
+        <div class="card-header">
+            <h2>ADD or Remove Claims For This User</h2>
+        </div>
+        <div class="card-body">
+
+            @for (int i = 0; i<Model.Claims.Count(); i++)
+            {
+                <div class="form-check m-1">
+
+                    <input type="hidden" asp-for="@Model.Claims[i].ClaimType" />
+                    <input asp-for="@Model.Claims[i].IsSelected" class="form-check-input" />
+                    <label asp-for="@Model.Claims[i].IsSelected" class="form-check-label">
+                        @Model.Claims[i].ClaimType
+                    </label>
+                </div>
+            }
+
+            <input type="hidden" asp-for="@Model.UserId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary w-auto">Save Changes</button>
+        </div>
+    </div>
+</form>

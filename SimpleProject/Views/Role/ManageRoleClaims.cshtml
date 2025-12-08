@@ -1,0 +1,37 @@
+﻿@model ManageRoleClaimsViewModel
+
+<form method="post">
+    <div class="card">
+        <div class="card-header">
+            <h2>ADD or Remove Claims For This Role</h2>
+        </div>
+        <div class="card-body">
+            @if (Model.RoleClaims.Any())
+            {
+                @for (int i = 0; i<Model.RoleClaims.Count(); i++)
+                {
+                    <div class="form-check m-1">
+
+                        <input type="hidden" asp-for="@Model.RoleClaims[i].ClaimType" />
+                        <input asp-for="@Model.RoleClaims[i].IsSelected" class="form-check-input" />
+                        <label asp-for="@Model.RoleClaims[i].IsSelected" class="form-check-label">
+                            @Model.RoleClaims[i].ClaimType
+                        </label>
+                    </div>
+                }
+            }
+            else
+            {
+                <div>
+                    <h1>No Claims Yet.</h1>
+                </div>
+            }
+
+            <input type="hidden" asp-for="@Model.RoleId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary w-auto">Save Changes</button>
+        </div>
+    </div>
+</form>

@@ -1,5 +1,6 @@
 ﻿@inject IHttpContextAccessor _contextAccessor;
 @inject SignInManager<User> _signInManager;
+@inject UserManager<User> _userManager;
 
 <!DOCTYPE html>
 
@@ -29,6 +30,18 @@
                     <li class="nav-item">
                         <a asp-controller="Home" asp-action="Privacy" class="nav-link">Privacy</a>
                     </li>
+                     @if (_signInManager.IsSignedIn(User)&&User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a asp-controller="Role" asp-action="Index" class="nav-link">Roles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="User" asp-action="Index" class="nav-link">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Claim" asp-action="Index" class="nav-link">Claims</a>
+                        </li>
+                    }
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item mt-2">

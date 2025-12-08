@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using SimpleProject.ViewModels.Products;
 
 namespace SimpleProject.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
@@ -50,12 +52,14 @@ namespace SimpleProject.Controllers
             var product = await _productService.GetProductByIdAsync(id);
             return View(product);
         }
+        [Authorize(Policy = "CreateProduct")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             ViewData["categories"] = new SelectList(await _categoryService.GetCategoriesAsync(), "Id", "NameAr");
             return View();
         }
+        [Authorize(Policy = "CreateProduct")]
         [HttpPost]
         public async Task<IActionResult> Create(AddProductViewModel model)
         {
@@ -140,7 +144,11 @@ namespace SimpleProject.Controllers
             {
                 var product = await _productService.GetProductByIdWithoutIncludeAsync(id);
                 if (product == null) return NotFound();
-                await _productService.DeleteProduct(product);
+                var result = await _productService.DeleteProduct(product);
+                if (result!="Success")
+                {
+                    ModelState.AddModelError(string.Empty, result);
+                }
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception)

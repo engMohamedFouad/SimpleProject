@@ -6,5 +6,9 @@
         {
             return Thread.CurrentThread.CurrentCulture.TextInfo.IsRightToLeft;
         }
+        public static bool IsArabic()
+        {
+            return Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.StartsWith("ar");
+        }
     }
 }

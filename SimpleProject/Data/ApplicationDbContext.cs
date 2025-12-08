@@ -19,5 +19,7 @@ namespace SimpleProject.Data
         public DbSet<Category> Category { get; set; }
         public DbSet<ProductImages> ProductsImages { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<Claim> Claim { get; set; }
+        public DbSet<SimpleProject.ViewModels.Identity.Users.GetUserByIdViewModel> GetUserByIdViewModel { get; set; } = default!;
     }
 }

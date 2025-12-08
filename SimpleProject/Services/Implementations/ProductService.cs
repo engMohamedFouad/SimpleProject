@@ -46,15 +46,27 @@ namespace SimpleProject.Services.Implementations
 
         public async Task<string> DeleteProduct(Product product)
         {
+            var trans = await _unitOfWork.BeginTransactionAsync();
             try
             {
+                var productImages = _unitOfWork.Repository<ProductImages>().GetAsQueryable();
+
+                var pathes = productImages.Select(x => x.Path).ToList();
+                await _unitOfWork.Repository<ProductImages>().DeleteRangeAsync(productImages);
+                //delete Files Physically
+                foreach (var file in pathes)
+                {
+                    _fileService.DeletePhysicalFile(file);
+                }
+
                 //string path = product.Path;
                 await _unitOfWork.Repository<Product>().Deletesync(product);
-                //_fileService.DeletePhysicalFile(path);
+                await trans.CommitAsync();
                 return "Success";
             }
             catch (Exception ex)
             {
+                await trans.RollbackAsync();
                 return ex.Message + "--" + ex.InnerException;
             }
 

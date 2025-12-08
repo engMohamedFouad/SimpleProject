@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using SimpleProject.Models.Identity;
 using SimpleProject.Resources;
 using SimpleProject.ViewModels.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace SimpleProject.Controllers
 {
@@ -25,8 +26,12 @@ namespace SimpleProject.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string ReturnUrl)
         {
+            var loginViewModel = new LoginViewModel
+            {
+                ReturnUrl=ReturnUrl
+            };
             return View();
         }
         [HttpPost]
@@ -34,7 +39,9 @@ namespace SimpleProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var isEmailVaild = new EmailAddressAttribute().IsValid(model.UserName);
+                var user = isEmailVaild ? await _userManager.FindByEmailAsync(model.UserName) : await _userManager.FindByNameAsync(model.UserName);
+
                 if (user==null)
                 {
                     ModelState.AddModelError(string.Empty, _stringLocalizer[SharedResourcesKeys.UsernameOrPasswordIsWrong]);
@@ -49,6 +56,11 @@ namespace SimpleProject.Controllers
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
+                    if (!string.IsNullOrEmpty(model.ReturnUrl)&&Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return LocalRedirect(model.ReturnUrl);
+                    }
+
                     return RedirectToAction("Index", "Home");
                 }
                 return View(model);
@@ -93,6 +105,12 @@ namespace SimpleProject.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
         }
     }
 }

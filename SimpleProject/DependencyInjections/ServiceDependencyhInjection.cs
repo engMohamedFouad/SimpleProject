@@ -11,6 +11,7 @@ namespace SimpleProject.DependencyInjections
             services.AddTransient<IFileService, FileService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IClaimService, ClaimService>();
 
             return services;
         }

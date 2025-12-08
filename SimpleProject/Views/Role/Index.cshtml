@@ -1,0 +1,37 @@
+﻿@model IEnumerable<GetRolesViewModel>
+@using Microsoft.Extensions.Localization
+@using SimpleProject.Resources
+@inject IStringLocalizer<SharedResources> _sharedResources;
+
+<div>
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
+    </p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @_sharedResources[SharedResourcesKeys.Name]
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="productList">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-controller="Role" asp-route-id="@item.Id" class="btn btn-info"> details</a>
+                        <a asp-action="Update" asp-controller="Role" asp-route-id="@item.Id" class="btn btn-primary">Update</a>
+                        <a asp-action="Delete" asp-controller="Role" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                        <a asp-action="ManageUsersInRole" asp-controller="Role" asp-route-roleId="@item.Id" class="btn btn-secondary">Manage Users</a>
+                        <a asp-action="ManageRoleClaims" asp-controller="Role" asp-route-roleId="@item.Id" class="btn btn-secondary">Manage Claims</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

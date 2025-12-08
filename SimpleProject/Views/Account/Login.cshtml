@@ -10,11 +10,14 @@
                             <h2 class="text-uppercase text-center mb-5">Login</h2>
 
                             <form asp-action="Login">
+
+                                <input asp-for="ReturnUrl" hidden />
+
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <div data-mdb-input-init class="form-outline mb-4">
-                                    <label class="form-label">Email</label>
-                                    <input asp-for="Email" class="form-control form-control-lg" autocomplete="off"/>
-                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                    <label class="form-label">Email Or UserName</label>
+                                    <input asp-for="UserName" class="form-control form-control-lg" autocomplete="off"/>
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
                                 </div>
 
                                 <div data-mdb-input-init class="form-outline mb-4">

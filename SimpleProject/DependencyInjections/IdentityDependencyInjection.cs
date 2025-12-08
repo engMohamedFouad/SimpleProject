@@ -30,6 +30,16 @@ namespace SimpleProject.DependencyInjections
 
 
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CreateProduct", policy => policy.RequireAssertion(
+               context => context.User.IsInRole("Admin")&&context.User.HasClaim("Create Product", "True")
+               ));
+                options.AddPolicy("CreateRole", policy => policy.RequireClaim("Create Role"));
+            });
+
             return services;
         }
     }
